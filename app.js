@@ -4,8 +4,9 @@ app.use(express.json());
 
 const { buildSchema } = require("graphql");
 const graphqlHttp = require("express-graphql");
-// temporary data store
-const events = [];
+// import event from models folder to parsing event input data
+const Event = require("./models/event");
+
 app.use(
   "/graphql",
   graphqlHttp({
@@ -39,22 +40,52 @@ app.use(
     `),
     rootValue: {
       events: () => {
-        return events;
+        return Event.find()
+          .then(events => {
+            return events.map(event => {
+              return { ...event._doc, _id: event.doc._id.toString() };
+            });
+          })
+          .catch(err => {
+            console.log(err);
+            throw err;
+          });
       },
       createEvent: args => {
-        const event = {
-          _id: Math.random().toString(),
+        const event = new Event({
           title: args.eventInput.title,
           description: args.eventInput.description,
           price: +args.eventInput.price,
-          delete: args.eventInput.delete
-        };
+          date: new Date(args.eventInput.date)
+        });
         // console.log(args);
-        events.push(event);
-        return event;
+        // events.push(event);
+        return event
+          .save()
+          .then(result => {
+            console.log(result);
+            return { ...result._doc };
+          })
+          .catch(err => {
+            console.log(err);
+          });
       }
     },
     graphiql: true
   })
 );
-app.listen(5000);
+
+// connect to monggodb
+const mongoose = require("mongoose");
+mongoose
+  .connect("mongodb://localhost:27017/react-booking-app", {
+    useNewUrlParser: true,
+    useUnifiedTopology: true
+  })
+  .then(() => {
+    app.listen(5000);
+    console.log("mongodb onfire");
+  })
+  .catch(err => {
+    console.log(err);
+  });
