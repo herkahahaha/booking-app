@@ -1,0 +1,38 @@
+{
+  "name": "book-app-system",
+  "version": "1.0.0",
+  "description": "prototype booking app by mongodb, express, react, node, and graphql",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/herkahahaha/booking-app-system.git"
+  },
+  "keywords": [
+    "graphql",
+    "mongodb",
+    "express",
+    "react",
+    "node"
+  ],
+  "author": "herkatryafitra",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/herkahahaha/booking-app-system/issues"
+  },
+  "homepage": "https://github.com/herkahahaha/booking-app-system#readme",
+  "dependencies": {
+    "bcrypt": "^3.0.6",
+    "express": "^4.17.1",
+    "express-graphql": "^0.9.0",
+    "graphql": "^14.5.7",
+    "jsonwebtoken": "^8.5.1",
+    "mongoose": "^5.7.1"
+  },
+  "devDependencies": {
+    "nodemon": "^1.19.2"
+  }
+}
