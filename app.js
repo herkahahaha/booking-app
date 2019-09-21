@@ -49,7 +49,7 @@ app.use(
           price: +args.eventInput.price,
           delete: args.eventInput.delete
         };
-        console.log(args);
+        // console.log(args);
         event.push(event);
         return event;
       }
