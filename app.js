@@ -41,7 +41,7 @@ app.use(
       events: () => {
         return events;
       },
-      createEvents: args => {
+      createEvent: args => {
         const event = {
           _id: Math.random().toString(),
           title: args.eventInput.title,
@@ -50,7 +50,7 @@ app.use(
           delete: args.eventInput.delete
         };
         // console.log(args);
-        event.push(event);
+        events.push(event);
         return event;
       }
     },
