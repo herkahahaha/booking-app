@@ -9,6 +9,37 @@ const graphqlHttp = require("express-graphql");
 const Event = require("./models/event");
 const User = require("./models/user");
 const bcrypt = require("bcryptjs");
+
+// user logic parsing data
+const user = userId => {
+  return User.findById(userId)
+    .then(user => {
+      return {
+        ...user._doc,
+        _id: user.id,
+        createdEvents: events.bind(this, user._doc.createdEvents)
+      };
+    })
+    .catch(err => {
+      throw err;
+    });
+};
+// events logic parsing data
+const events = eventIds => {
+  return Event.find({ _id: { $in: eventIds } })
+    .then(events => {
+      return events.map(event => {
+        return {
+          ...event._doc,
+          _id: event.id,
+          creator: user.bind(this, event.creator)
+        };
+      });
+    })
+    .catch(err => {
+      throw err;
+    });
+};
 app.use(
   "/graphql",
   graphqlHttp({
@@ -19,11 +50,13 @@ app.use(
         description: String!
         price: Float!
         date: String!
+        creator: User!
     }
     type User {
         _id: ID!
         email: String!
         password: String
+        createdEvents: [Event!]
     }
 
     input EventInput {
@@ -55,9 +88,18 @@ app.use(
     rootValue: {
       events: () => {
         return Event.find()
+          .populate("creator")
           .then(events => {
             return events.map(event => {
-              return { ...event._doc, _id: event._doc._id.toString() };
+              return {
+                ...event._doc,
+                _id: event._doc._id.toString(),
+                creator: user.bind(this, event._doc.creator)
+                //  {
+                //   ...event._doc.creator._doc,
+                //   _id: event._doc.creator.id
+                // }
+              };
             });
           })
           .catch(err => {
@@ -72,6 +114,7 @@ app.use(
           price: +args.eventInput.price,
           date: new Date(args.eventInput.date),
           creator: "5d8c2a5125f37d3a7c63c29f"
+          // creator: "5d8c2a5125f37d3a7c63c29f"
         });
         let createdEvent;
         // console.log(args);
@@ -79,7 +122,11 @@ app.use(
         return event
           .save()
           .then(result => {
-            createdEvent = { ...result._doc, _id: result._doc._id.toString() };
+            createdEvent = {
+              ...result._doc,
+              _id: result._doc._id.toString(),
+              creator: user.bind(this, result._doc.creator)
+            };
             return User.findById("5d8c2a5125f37d3a7c63c29f");
           })
           .then(user => {
