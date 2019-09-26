@@ -1,22 +1,7 @@
 const express = require("express");
 const app = express();
 app.use(express.json());
-
-/* ------------------
-        CORS 
----------------------*/
-app.use((req, res, next) => {
-  res.header("Access-Control-Allow-Origin", "*");
-  res.header(
-    "Access-Control-Allow-Headers",
-    "Origin, X-Requested-With, Content-Type, Accept,Authorization"
-  );
-  if (req.method === "OPTIONS") {
-    res.header("Access-Control-Allow-Methods", "GET,POST,PATCH,DELETE,PUT");
-    return res.status(200).json({});
-  }
-  next();
-});
+require("dotenv").config();
 
 const { buildSchema } = require("graphql");
 const graphqlHttp = require("express-graphql");
@@ -35,6 +20,11 @@ app.use(
         price: Float!
         date: String!
     }
+    type User {
+        _id: ID!
+        email: String!
+        password: String
+    }
 
     input EventInput {
         title: String!
@@ -43,11 +33,7 @@ app.use(
         date: String!
     }
 
-    type User {
-        _id: ID!
-        email: String!
-        password: String
-    }
+    
     input UserInput {
         email: String!
         password: String!
@@ -84,42 +70,58 @@ app.use(
           title: args.eventInput.title,
           description: args.eventInput.description,
           price: +args.eventInput.price,
-          date: new Date(args.eventInput.date)
+          date: new Date(args.eventInput.date),
+          creator: "5d8c2a5125f37d3a7c63c29f"
         });
+        let createdEvent;
         // console.log(args);
         // events.push(event);
         return event
           .save()
           .then(result => {
-            console.log(result);
-            return { ...result._doc };
+            createdEvent = { ...result._doc, _id: result._doc._id.toString() };
+            return User.findById("5d8c2a5125f37d3a7c63c29f");
+          })
+          .then(user => {
+            if (!user) {
+              throw new Error("User Not Found!");
+            }
+            user.createdEvent.push(event);
+            return user.save();
+          })
+          .then(result => {
+            return createdEvent;
           })
           .catch(err => {
             console.log(err);
           });
-      }
-    },
-    createUser: args => {
-      return bcrypt
-        .hash(args.userInput.password, 12)
-        .then(hashedPassword => {
-          const user = new User({
-            email: args.userInput.email,
-            password: hashedPassword
+      },
+      // create user
+      createUser: args => {
+        return User.findOne({ email: args.userInput.email })
+          .then(user => {
+            if (user) {
+              {
+                throw new Error("user already exixst");
+              }
+            }
+            return bcrypt.hash(args.userInput.password, 12);
+          })
+          .then(hashedPasword => {
+            const user = new User({
+              email: args.userInput.email,
+              password: hashedPasword
+            });
+            return user.save();
+          })
+          .then(result => {
+            console.log(result);
+            return { ...result._doc, _id: result.id, password: null };
+          })
+          .catch(err => {
+            throw err;
           });
-          return user.save();
-        })
-        .then(result => {
-          console.log(result);
-          return {
-            ...result._doc,
-            password: null,
-            _id: result._id
-          };
-        })
-        .catch(err => {
-          console.log(err);
-        });
+      }
     },
     graphiql: true
   })
@@ -127,10 +129,13 @@ app.use(
 
 /* connect to monggodb*/
 const mongoose = require("mongoose");
+// const db = process.env.MONGO_URL;
+const localhost = "mongodb://localhost:27017/react-booking-app";
 mongoose
-  .connect("mongodb://localhost:27017/react-booking-app", {
+  .connect(localhost, {
     useNewUrlParser: true,
-    useUnifiedTopology: true
+    useUnifiedTopology: true,
+    useCreateIndex: true
   })
   .then(() => {
     app.listen(5000);
