@@ -1,27 +1,7 @@
 // import event from models folder to parsing event input data
 const Event = require("../../models/event");
 const Booking = require("../../models/booking");
-const { dateToString } = require("../../helper/date");
-const { user, singleEvent } = require("./merge");
-
-// refactoring
-const eventTransform = event => {
-  return {
-    ...event._doc,
-    _id: event.id,
-    creator: user.bind(this, event.creator)
-  };
-};
-const bookingTransform = booking => {
-  return {
-    ...booking._doc,
-    _id: booking.id,
-    user: user.bind(this, booking._doc.user),
-    event: singleEvent.bind(this, booking._doc.event),
-    createdAt: dateToString(booking._doc.createdAt),
-    updatedAt: dateToString(booking._doc.updatedAt)
-  };
-};
+const { eventTransform, bookingTransform } = require("./merge");
 
 module.exports = {
   bookings: async () => {

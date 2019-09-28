@@ -1,5 +1,6 @@
 const Event = require("../../models/event");
 const User = require("../../models/booking");
+const { dateToString } = require("../../helper/date");
 
 // refactoring
 const eventTransform = event => {
@@ -10,6 +11,16 @@ const eventTransform = event => {
   };
 };
 
+const bookingTransform = booking => {
+  return {
+    ...booking._doc,
+    _id: booking.id,
+    user: user.bind(this, booking._doc.user),
+    event: singleEvent.bind(this, booking._doc.event),
+    createdAt: dateToString(booking._doc.createdAt),
+    updatedAt: dateToString(booking._doc.updatedAt)
+  };
+};
 // user logic parsing data
 const user = async userId => {
   try {
@@ -49,6 +60,8 @@ const singleEvent = async eventId => {
   }
 };
 
-exports.user = user;
-exports.events = events;
-exports.singleEvent = singleEvent;
+// exports.user = user;
+// exports.events = events;
+// exports.singleEvent = singleEvent;
+exports.eventTransform = eventTransform;
+exports.bookingTransform = bookingTransform;
