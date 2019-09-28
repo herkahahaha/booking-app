@@ -6,13 +6,13 @@ const graphqlHttp = require("express-graphql");
 
 //import graphql file
 const graphqlSchema = require("./graphql/schema/index");
-const graphqlResolver = require("./graphql/resolver/index");
+const rootResolver = require("./graphql/resolver/index");
 
 app.use(
   "/graphql",
   graphqlHttp({
     schema: graphqlSchema,
-    rootValue: graphqlResolver,
+    rootValue: rootResolver,
     graphiql: true
   })
 );
