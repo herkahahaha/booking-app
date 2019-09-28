@@ -1,3 +1,6 @@
+const Event = require("../../models/event");
+const User = require("../../models/booking");
+
 // refactoring
 const eventTransform = event => {
   return {
