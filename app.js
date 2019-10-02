@@ -4,6 +4,10 @@ app.use(express.json());
 require("dotenv").config();
 const graphqlHttp = require("express-graphql");
 
+// auth-here as middleware
+const isAuth = require("./middleware/auth-here");
+app.use(isAuth);
+
 //import graphql file
 const graphqlSchema = require("./graphql/schema/index");
 const rootResolver = require("./graphql/resolver/index");
