@@ -5,6 +5,11 @@
 /.pnp
 .pnp.js
 
+# frontend
+/client
+/graphql
+
+
 # testing
 /coverage
 
