@@ -2,6 +2,7 @@ const express = require("express");
 const app = express();
 app.use(express.json());
 require("dotenv").config();
+const cors = require("cors");
 const graphqlHttp = require("express-graphql");
 
 // auth-here as middleware
@@ -14,6 +15,7 @@ const rootResolver = require("./graphql/resolver/index");
 
 app.use(
   "/graphql",
+  cors(),
   graphqlHttp({
     schema: graphqlSchema,
     rootValue: rootResolver,
