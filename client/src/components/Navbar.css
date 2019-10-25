@@ -1,0 +1,38 @@
+.main-nav {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 3.2rem;
+    padding: 0.25rem;
+    display: flex;
+    align-items: center;
+    background: #f83030;
+    color: #ffff;
+
+}
+
+.nav-logo {
+    margin-left: 0.75rem;
+}
+
+.nav-item ul {
+    display: flex;
+    align-items: center;
+}
+
+.nav-item ul li a {
+    text-decoration: none;
+    color: #ffff;
+}
+
+.nav-item ul li a:hover,
+.nav-item ul li a:active,
+.nav-item ul li a.active {
+    color: #a51919;
+}
+
+.nav-item ul li {
+    list-style: none;
+    margin: 0 1rem;
+}
