@@ -27,9 +27,8 @@
 }
 
 .nav-item ul li a:hover,
-.nav-item ul li a:active,
-.nav-item ul li a.active {
-    color: #a51919;
+.nav-item ul li a:active {
+    color: #dd506c;
 }
 
 .nav-item ul li {
